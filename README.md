@@ -3,7 +3,7 @@
 This is a bunch of tools that I created to help to deal with appium.
 
 ### Device Management
-Here we have some code to help with parallel execution.
+Here we have some code to help with parallel execution with TestNG.
 
 To manage your devices you need send in JSON array format, every new braces will count like 1 device
 ````
@@ -44,6 +44,14 @@ public void myTest() {
     }
     //YOUR TEST CODE
 }
+````
+
+From your TestNG Suite you need set correlate the device number from your JSON and the thread-count value in the TestNG Suite.
+
+If you are running and sending this parameters by Jenkins and Groovy, you can run in this way: 
+````
+def deviceValue = PARAMETERS.split("(?<=}),").length as String
+mvn test -Dsurefire.suiteXmlFiles=src/test.xml -DthreadCount=deviceValue  -DparallelDevices=PARAMETERS
 ````
 
 ### Scrolling
