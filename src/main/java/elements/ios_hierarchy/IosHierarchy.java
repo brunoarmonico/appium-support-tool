@@ -1,4 +1,4 @@
-package hierarchy;
+package elements.ios_hierarchy;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /** Manipulação de elementos com base em atributos extraidos do DOM da pagina
  * @author bruno.armonico
  */
-public class iosHierarchy {
+public class IosHierarchy {
 
     private AppiumDriver<MobileElement> driver;
     private int implicitWait;
@@ -27,7 +27,7 @@ public class iosHierarchy {
     private boolean ignoreElementException;
     List<ElementIos> elementos = new LinkedList<ElementIos>();
 
-    public iosHierarchy(AppiumDriver<MobileElement> appiumDriver) {
+    public IosHierarchy(AppiumDriver<MobileElement> appiumDriver) {
         this.driver = appiumDriver;
         setDefault();
     }
@@ -35,7 +35,7 @@ public class iosHierarchy {
     /**
      * Redefine parametros da classe
      */
-    public iosHierarchy setDefault() {
+    public IosHierarchy setDefault() {
         this.implicitWait = 30;
         this.explicitWait = 30;
         this.ignoreElementException = false;
@@ -48,7 +48,7 @@ public class iosHierarchy {
      *
      * @return Retorna a propria classe
      */
-    public iosHierarchy ignoreElementException(boolean interruptor) {
+    public IosHierarchy ignoreElementException(boolean interruptor) {
         ignoreElementException = interruptor;
         return this;
     }
@@ -59,7 +59,7 @@ public class iosHierarchy {
      * @param time Novo tempo para o implicitwait
      * @return Retorna a propria classe
      */
-    public iosHierarchy implicitTimeout(int time) {
+    public IosHierarchy implicitTimeout(int time) {
         implicitWait = time;
         return this;
     }
@@ -70,7 +70,7 @@ public class iosHierarchy {
      * @param interruptor True equivale a equals, false a contains
      * @return Retorna instancia da classe
      */
-    public iosHierarchy setExactlyElement(boolean interruptor) {
+    public IosHierarchy setExactlyElement(boolean interruptor) {
         exactlyElement = interruptor;
         return this;
     }
@@ -82,7 +82,7 @@ public class iosHierarchy {
      * @param interruptor Caso verdadeiro a busca por elemento irá retornar sempre um unico elemento
      * @return Retorna a propria classe
      */
-    public iosHierarchy immediateReturn(boolean interruptor) {
+    public IosHierarchy immediateReturn(boolean interruptor) {
         this.immediateReturn = interruptor;
         return this;
     }

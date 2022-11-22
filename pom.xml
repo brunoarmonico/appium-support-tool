@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>brunoarmonico</groupId>
-    <artifactId>appium-strategy-tool</artifactId>
+    <artifactId>appium-support-tool</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
         <dependency>

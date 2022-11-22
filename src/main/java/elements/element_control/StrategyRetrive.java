@@ -10,14 +10,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Retrive strategy from By or MobileElement elements!!
+ *
+ * @author bruno.armonico
+ */
 public class StrategyRetrive {
 
     AppiumDriver<MobileElement> driver;
 
     /**
-     * Construtor da classe
-     *
-     * @param appiumDriver Driver de execução
+     * @param appiumDriver Executor driver
      */
     public StrategyRetrive(AppiumDriver<MobileElement> appiumDriver) {
         this.driver = appiumDriver;
@@ -28,37 +31,36 @@ public class StrategyRetrive {
     }
 
     /**
-     * Realiza a extração da estrategia de um elemento
+     * Extract element strategy from By or MobileElement
+     * Supported: UiSelector, Class Chain, Predicate String
      *
-     * @param elemento elements.invisible_element.Elemento APP
-     * @return Estragia de localização de elemento
+     * @param element Element in By or MobileElement object
+     * @return Element strategy as String
      */
-    public String retriveStrategy(Object elemento) {
-        if (elemento instanceof By) {
-            Pattern pat1 = Pattern.compile("(?<=: )(.*)");
-            Matcher mat = pat1.matcher(elemento.toString());
-            mat.find();
-            return mat.group();
+    public String retriveStrategy(Object element) {
+        if (element instanceof By) {
+            Matcher match = Pattern.compile("(?<=: )(.*)").matcher(element.toString());
+            match.find();
+            return match.group();
         } else {
-            Pattern pat1 = Pattern.compile("((?<= -> -)(.*)([\\]]))|((?<=: )(.*))");
-            Matcher mat = pat1.matcher(elemento.toString());
+            Matcher mat = Pattern.compile("((?<= -> -)(.*)([\\]]))|((?<=: )(.*))").matcher(element.toString());
             mat.find();
-            String stringElemento = mat.group();
-            Pattern pat2 = Pattern.compile("(?<=: )(.*)(?=])|(.*)(?=}\\\\)|(.*)(?=}\\))");
-            Matcher mat2 = pat2.matcher(stringElemento);
-            mat2.find();
-            return mat2.group();
+            String strategyCut = mat.group();
+            Matcher match = Pattern.compile("(?<=: )(.*)(?=])|(.*)(?=}\\\\)|(.*)(?=}\\))").matcher(strategyCut);
+            match.find();
+            return match.group();
         }
     }
 
     /**
-     * Realiza a extração da estrategia de um elemento
+     * Extract element strategt from By or MobileElement
+     * Supported: UiSelector, Class Chain, Predicate String
      *
-     * @param elemento elements.invisible_element.Elemento APP
-     * @return Estragia de localização de elemento formato By
+     * @param element Element in By or MobileElement object
+     * @return Return element as By object
      */
-    public By retriveBy(Object elemento) {
-        String strategy = retriveStrategy(elemento);
+    public By retriveBy(Object element) {
+        String strategy = retriveStrategy(element);
         if (strategy.toLowerCase().contains("uiselector")) {
             return MobileBy.AndroidUIAutomator(strategy);
         } else if (strategy.contains("**/")) { // Class Chain
