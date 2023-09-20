@@ -1,6 +1,6 @@
-import elements.scroll.Scroll;
-import elements.scroll.Toward;
-import org.testng.annotations.Test;
+import core.appium_support.scroll.Scroll;
+import core.appium_support.scroll.Toward;
+import org.junit.jupiter.api.Test;
 
 public class ScrollTest {
 

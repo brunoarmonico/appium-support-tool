@@ -1,10 +1,11 @@
-package elements.element_control;
+package core.appium_support.element_control;
 
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -15,14 +16,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class CustomImplicit {
 
-    private static int DEFAULT_IMPLICITY = 30;
+    private int DEFAULT_IMPLICITY = (int) System.getProperties().get("driver.default-implicitly-timeout");
     private int SEARCH_IMPLICITY = 1;
-    private AppiumDriver<MobileElement> driver;
+    private AppiumDriver driver;
 
 
-    public CustomImplicit (AppiumDriver<MobileElement> driver) {
+    public CustomImplicit (AppiumDriver driver) {
         this.driver = driver;
-        driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICITY, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(DEFAULT_IMPLICITY));
     }
 
     public CustomImplicit setImplicity(int segundos) {
@@ -30,8 +31,8 @@ public class CustomImplicit {
         return this;
     }
 
-    public boolean elementExists(List<MobileElement> elemento) {
-        driver.manage().timeouts().implicitlyWait(SEARCH_IMPLICITY, TimeUnit.SECONDS);
+    public boolean elementExists(List<WebElement> elemento) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(DEFAULT_IMPLICITY));
         // Se lista de elemento não esta vazio
         return !elemento.isEmpty();
     }
@@ -45,17 +46,17 @@ public class CustomImplicit {
     public boolean elementExists(By elemento) {
         driver.manage().timeouts().implicitlyWait(SEARCH_IMPLICITY, TimeUnit.SECONDS);
         String elemString = new StrategyRetrive().retriveStrategy(elemento);
-        List<MobileElement> lstElemento;
+        List<WebElement> lstElemento;
         if (elemString.toLowerCase().contains("uiselector")) {
-            lstElemento = driver.findElements(MobileBy.AndroidUIAutomator(elemString));
+            lstElemento = driver.findElements(AppiumBy.androidUIAutomator(elemString));
         } else if (elemString.contains("**/")) { // Class Chain
-            lstElemento = driver.findElements(MobileBy.iOSClassChain(elemString));
+            lstElemento = driver.findElements(AppiumBy.iOSClassChain(elemString));
         } else { // Predicate String
-            lstElemento = driver.findElements(MobileBy.iOSNsPredicateString(elemString));
+            lstElemento = driver.findElements(AppiumBy.iOSNsPredicateString(elemString));
         }
         // Se elemento encontrado
         boolean elementoExiste = !lstElemento.isEmpty();
-        driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICITY, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(DEFAULT_IMPLICITY));
         return elementoExiste;
     }
 }

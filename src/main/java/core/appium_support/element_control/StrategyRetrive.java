@@ -1,8 +1,7 @@
-package elements.element_control;
+package core.appium_support.element_control;
 
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.By;
 
@@ -11,18 +10,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Retrive strategy from By or MobileElement elements!!
+ * Retrive strategy for By or MobileElement elements!!
  *
  * @author bruno.armonico
  */
 public class StrategyRetrive {
 
-    AppiumDriver<MobileElement> driver;
+    AppiumDriver driver;
 
     /**
      * @param appiumDriver Executor driver
      */
-    public StrategyRetrive(AppiumDriver<MobileElement> appiumDriver) {
+    public StrategyRetrive(AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
     }
 
@@ -31,7 +30,7 @@ public class StrategyRetrive {
     }
 
     /**
-     * Extract element strategy from By or MobileElement
+     * Extract element strategy for By or MobileElement
      * Supported: UiSelector, Class Chain, Predicate String
      *
      * @param element Element in By or MobileElement object
@@ -53,7 +52,7 @@ public class StrategyRetrive {
     }
 
     /**
-     * Extract element strategt from By or MobileElement
+     * Extract element strategt for By or MobileElement
      * Supported: UiSelector, Class Chain, Predicate String
      *
      * @param element Element in By or MobileElement object
@@ -62,11 +61,11 @@ public class StrategyRetrive {
     public By retriveBy(Object element) {
         String strategy = retriveStrategy(element);
         if (strategy.toLowerCase().contains("uiselector")) {
-            return MobileBy.AndroidUIAutomator(strategy);
+            return AppiumBy.androidUIAutomator(strategy);
         } else if (strategy.contains("**/")) { // Class Chain
-            return MobileBy.iOSClassChain(strategy);
+            return AppiumBy.iOSClassChain(strategy);
         } else { // Predicate String
-            return MobileBy.iOSNsPredicateString(strategy);
+            return AppiumBy.iOSNsPredicateString(strategy);
         }
     }
 
@@ -75,7 +74,7 @@ public class StrategyRetrive {
      *
      * @param elements   Send N elements to be looked for
      * @param searchTime Set how many seconds will be used for element search
-     * @return Get the first element finded
+     * @return Get the first element find
      */
     public By findFirst(int searchTime, By... elements) {
         StopWatch timer = new StopWatch();
@@ -86,6 +85,7 @@ public class StrategyRetrive {
                     return element;
             }
         }
+        System.out.println("Element not found at findFirst");
         return null;
     }
 }

@@ -1,4 +1,4 @@
-package elements.scroll;
+package core.appium_support.scroll;
 
 public enum Toward {
 

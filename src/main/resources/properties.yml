@@ -1,0 +1,38 @@
+app:
+  android:
+    appPackage: androidPackageHere
+    appActivity: androidActivityHere
+  ios:
+    bundleId: iosBundleIdHere
+services:
+  device-farm:
+    base: ''
+    path: ''
+    capabilities:
+      farmCaps: farmCapsHere
+  local:
+    base: http://127.0.0.1:4723
+    path: ''
+capabilities:
+  android:
+    autoGrantPermissions: true
+  ios:
+    platformVersion: 16
+  global:
+    newCommandTimeout: 60
+    autoAcceptAlerts: true
+    appium:noReset: true
+    appium:fullReset: false
+driver:
+  default-implicitly-timeout: 30
+  service-execution: local
+  devices:
+    udid: ''
+    platformName: ''
+framework:
+  screenshot-evidence:
+    assertion: all
+  video-evidence:
+    enabled: true
+    assertion: all
+    localFile: false

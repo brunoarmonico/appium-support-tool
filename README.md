@@ -72,4 +72,4 @@ This class helps you to:
 
 Unfortunately, I don't have much time to translate all this code and java doc to english, so for some time will be in portuguese.
 
-Feel free to use and modify, and i will be happy if i could receive some credits.
+Feel free to use and modify.

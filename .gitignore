@@ -23,3 +23,7 @@
 hs_err_pid*
 /appium-strategy-tool.iml
 /.idea/
+/package-lock.json
+/package.json
+/target/
+/src/main/resources/properties.yml

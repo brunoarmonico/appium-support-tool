@@ -1,14 +1,14 @@
-package elements.scroll;
+package core.appium_support.scroll;
 
-import elements.element_control.CustomImplicit;
+import core.appium_support.element_control.CustomImplicit;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 /**
  * Do a Scroll!!
@@ -20,14 +20,14 @@ public class Scroll {
     private boolean disableException = false;
     private int defaultSpeed = 1000;
     private int defaultAreaPercentage = 70;
-    AppiumDriver<MobileElement> driver;
+    AppiumDriver driver;
 
     /**
      * Construtor da classe
      *
      * @param appiumDriver Driver de execução
      */
-    public Scroll(AppiumDriver<MobileElement> appiumDriver) {
+    public Scroll(AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
     }
 
@@ -51,7 +51,7 @@ public class Scroll {
      * @param scrollAmount   Maximum scrolls tries while searching
      * @param scrollTo       Sets the scroll direction
      */
-    public MobileElement scrollVertical(By targetElement, double screenPercentage, int scrollSpeed, int scrollAmount, Toward scrollTo) {
+    public WebElement scrollVertical(By targetElement, double screenPercentage, int scrollSpeed, int scrollAmount, Toward scrollTo) {
         if (scrollTo == Toward.RIGHT || scrollTo == Toward.LEFT) {
             new ScrollException("Horizontal scroll not allowed!");
         }
@@ -62,16 +62,28 @@ public class Scroll {
         }
         int proporcaoX = driver.manage().window().getSize().getWidth();
         int proporcaoY = driver.manage().window().getSize().getHeight();
+
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence scroll = new Sequence(finger, 0);
+        int centroX = (proporcaoX / 2);
         if (scrollTo == Toward.DOWN) { // Scroll Down
-            new TouchAction(driver).press(PointOption.point((proporcaoX / 2), (int) (((double) proporcaoY / 2) * ((screenPercentage / 100) + 1)))).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point((proporcaoX / 2), (int) (((double) proporcaoY / 2) * (100 - screenPercentage) / 100))).
-                    release().perform();
+            int direcaoAreaMin = (int) (((double) proporcaoY / 2) * ((screenPercentage / 100) + 1));
+            int direcaoAreaMax = (int) (((double) proporcaoY / 2) * (100 - screenPercentage) / 100);
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centroX,  direcaoAreaMin));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), centroX, direcaoAreaMax));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         } else { // Scroll Up
-            new TouchAction(driver).press(PointOption.point((proporcaoX / 2), (int) (((double) proporcaoY / 2) * (100 - screenPercentage) / 100))).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point((proporcaoX / 2), (int) (((double) proporcaoY / 2) * ((screenPercentage / 100) + 1)))).
-                    release().perform();
+            int direcaoAreaMin = (int) (((double) proporcaoY / 2) * (100 - screenPercentage) / 100);
+            int direcaoAreaMax = (int) (((double) proporcaoY / 2) * ((screenPercentage / 100) + 1));
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centroX,  direcaoAreaMin));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), centroX, direcaoAreaMax));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         }
         scrollAmount--;
         if (targetElement != null) {
@@ -102,7 +114,7 @@ public class Scroll {
      *
      * @return Return target element if finded
      */
-    public MobileElement scrollVertical(By targetElement, int scrollAmount, Toward scrollTo) {
+    public WebElement scrollVertical(By targetElement, int scrollAmount, Toward scrollTo) {
         return scrollVertical(targetElement, 50, defaultSpeed, scrollAmount, scrollTo);
     }
 
@@ -117,56 +129,69 @@ public class Scroll {
      * @param scrollAmount   Maximum scrolls tries while searching
      * @param scrollTo       Sets the scroll direction
      */
-    public MobileElement scrollArea(MobileElement elementArea, By targetElement, double areaPercentage, int scrollSpeed, int scrollAmount, Toward scrollTo) {
+    public WebElement scrollArea(WebElement elementArea, By targetElement, double areaPercentage, int scrollSpeed, int scrollAmount, Toward scrollTo) {
         if (targetElement != null) {
-            if (new CustomImplicit(driver).setImplicity(1).elementExists(targetElement)) {
+            if (new CustomImplicit(driver).setImplicity(1).elementExists(targetElement) && driver.findElement(targetElement).isDisplayed()) {
                 return driver.findElement(targetElement);
             }
         }
-        int areaLocationX = elementArea.getLocation().getX();
-        int areaLocationY = elementArea.getLocation().getY();
+        int areaLocationX = elementArea.getLocation().getX() != 0 ?
+                elementArea.getLocation().getX() : (int) (elementArea.getSize().getWidth() * 0.1);
+        int areaLocationY = elementArea.getLocation().getY() != 0 ?
+                elementArea.getLocation().getY() : (int) (elementArea.getLocation().getY() * 0.1);
         int areaSizeX = elementArea.getSize().getWidth();
         int areaSizeY = elementArea.getSize().getHeight();
+
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence scroll = new Sequence(finger, 0);
         if (scrollTo == Toward.DOWN) {
             int areaCenter = areaSizeY / 2;
             int direcaoAreaMin = (int) (areaLocationY + ((areaCenter) * ((100 - areaPercentage) / 100)));
-            int direcaoAreaMax = (int) (areaLocationY + ((areaCenter) * ((areaPercentage / 100) + 1)));
+            int direcaoAreaMax = (int) (areaLocationY + ((areaCenter) * (areaPercentage / 100)));
             int centroX = (areaLocationX + (areaSizeX / 2));
-            new TouchAction(driver).press(PointOption.point(centroX, direcaoAreaMax)).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point(centroX, direcaoAreaMin)).
-                    release().perform();
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centroX, direcaoAreaMax));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), centroX, direcaoAreaMin));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         } else if (scrollTo == Toward.UP) {
             int areaCenter = areaSizeY / 2;
             int direcaoAreaMin = (int) (areaLocationY + ((areaCenter) * ((100 - areaPercentage) / 100)));
             int direcaoAreaMax = (int) (areaLocationY + ((areaCenter) * ((areaPercentage / 100) + 1)));
-            int centroX = (areaSizeX + (areaLocationX / 2));
-            new TouchAction(driver).press(PointOption.point(centroX, direcaoAreaMin)).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point(centroX, direcaoAreaMax)).
-                    release().perform();
+            int centroX = (areaLocationX + (areaSizeX / 2));
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centroX,  direcaoAreaMin));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), centroX, direcaoAreaMax));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         } else if (scrollTo == Toward.LEFT) {
             int areaCenter = areaLocationX / 2;
             int direcaoAreaMin = (int) (areaLocationX + ((areaCenter) * ((100 - areaPercentage) / 100)));
             int direcaoAreaMax = (int) (areaLocationX + ((areaCenter) * ((areaPercentage / 100) + 1)));
             int centroY = areaLocationY + (areaSizeY / 2);
-            new TouchAction(driver).press(PointOption.point(direcaoAreaMin, centroY)).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point(direcaoAreaMax, centroY)).
-                    release().perform();
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), direcaoAreaMin,  centroY));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), direcaoAreaMax, centroY));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         } else if (scrollTo == Toward.RIGHT) {
             int areaCenter = areaLocationX / 2;
             int direcaoAreaMin = (int) (areaLocationX + ((areaCenter) * ((100 - areaPercentage) / 100)));
             int direcaoAreaMax = (int) (areaLocationX + ((areaCenter) * ((areaPercentage / 100) + 1)));
             int centroY = (areaLocationY + (areaSizeY / 2));
-            new TouchAction(driver).press(PointOption.point(direcaoAreaMax, centroY)).
-                    waitAction(WaitOptions.waitOptions(Duration.ofMillis(scrollSpeed))).
-                    moveTo(PointOption.point(direcaoAreaMin, centroY)).
-                    release().perform();
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), direcaoAreaMax,  centroY));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(scrollSpeed), PointerInput.Origin.viewport(), direcaoAreaMin, centroY));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+            driver.perform(Arrays.asList(scroll));
         }
         scrollAmount--;
         if (targetElement != null) {
-            if (new CustomImplicit(driver).setImplicity(1).elementExists(targetElement)) {
+             if (new CustomImplicit(driver).setImplicity(1).elementExists(targetElement) && driver.findElement(targetElement).isDisplayed()) {
                 return driver.findElement(targetElement);
             }
         }
@@ -189,7 +214,7 @@ public class Scroll {
      * @param scrollAmount   Maximum scrolls tries while searching
      * @param scrollTo       Sets the scroll direction
      */
-    public MobileElement scrollArea(MobileElement elementArea, By targetElement, int scrollAmount, Toward scrollTo) {
+    public WebElement scrollArea(WebElement elementArea, By targetElement, int scrollAmount, Toward scrollTo) {
         return scrollArea(elementArea, targetElement, defaultAreaPercentage, defaultSpeed, scrollAmount, scrollTo);
     }
 
@@ -201,7 +226,7 @@ public class Scroll {
      * @param scrollAmount   Maximum scrolls tries while searching
      * @param scrollTo       Sets the scroll direction
      */
-    public void scrollArea(MobileElement elementArea, int scrollAmount, Toward scrollTo) {
+    public void scrollArea(WebElement elementArea, int scrollAmount, Toward scrollTo) {
         scrollArea(elementArea, null, defaultAreaPercentage, defaultSpeed, scrollAmount, scrollTo);
     }
 }
